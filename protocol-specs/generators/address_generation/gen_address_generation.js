@@ -13,16 +13,15 @@ function generateTestCasesForAddressFromPubKey() {
 	};
 }
 
-function addressFromPubKeySuite(configPath) {
+function addressFromPubKeySuite() {
 	return {
 		title: 'Address generation',
 		summary: 'Address generation from a public key',
 		config: 'mainnet',
-		runner: 'block_processing',
-		handler: 'valid_block_processing',
-		testCases: generateTestCasesForAddressFromPubKey(),
+		runner: 'address_generation',
+		handler: 'address_from_pub_key',
+		testCases: [generateTestCasesForAddressFromPubKey()],
 	};
 }
-module.exports = BaseGenerator.runGenerator('address_generation', [
-	addressFromPubKeySuite,
-]);
+
+BaseGenerator.runGenerator('address_generation', [addressFromPubKeySuite]);
