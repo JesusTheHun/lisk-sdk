@@ -15,10 +15,9 @@ module.exports = {
 				fs.mkdirSync(dirPath);
 			}
 
-			fs.writeFileSync(
-				`${dirPath}/${suiteResult.handler}.json`,
-				JSON.stringify(suiteResult, null, 2),
-			);
+			const fullPath = `${dirPath}/${suiteResult.handler}.json`;
+
+			fs.writeFileSync(fullPath, JSON.stringify(suiteResult, null, 2));
 		}
 	},
 };
