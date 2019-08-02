@@ -1,4 +1,4 @@
-const BaseGenerator = require('../base_generator');
+const BaseGenerator = require('../../base_generator');
 
 function generateTestCasesForValidBlock() {}
 

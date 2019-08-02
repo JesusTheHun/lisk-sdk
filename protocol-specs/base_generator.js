@@ -3,12 +3,13 @@ const path = require('path');
 
 module.exports = {
 	runGenerator: (generatorName, suiteCreators) => {
+		// eslint-disable-next-line no-restricted-syntax
 		for (const suite of suiteCreators) {
 			const suiteResult = suite();
 
 			const dirPath = path.join(
 				__dirname,
-				`../generator_outputs/${suiteResult.runner}`,
+				`./generator_outputs/${suiteResult.runner}`,
 			); // TODO: remove hard path
 
 			if (!fs.existsSync(dirPath)) {
