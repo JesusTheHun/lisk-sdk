@@ -1,3 +1,3 @@
 module.exports = {
-	create: () => {},
+	create: (previousBlock, { blockData }) => {},
 };
