@@ -21,12 +21,9 @@ const TARGET_ACCOUNT = {
 const BASIC_TRANSFER = {
 	amount: '10',
 	recipientId: TARGET_ACCOUNT.address,
-	senderId: undefined,
-	senderPublicKey: undefined,
 	timestamp: 100565431,
 	asset: {},
 	fee: '10000000',
-	recipientPublicKey: undefined,
 	type: 0,
 };
 
