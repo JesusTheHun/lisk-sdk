@@ -24,4 +24,25 @@ function addressFromPubKeySuite() {
 	};
 }
 
-BaseGenerator.runGenerator('address_generation', [addressFromPubKeySuite]);
+function generateTestCakhgkjghkjgsesForAddressFromPubKey() {
+	return {
+		kuhgkjgkjgkjg: PUBLIC_KEY,
+		oukjhgkjghkjgkjghtput: getAddressFromPublicKey(PUBLIC_KEY), // 12668885769632475474L
+	};
+}
+
+function addreufjhfjhfjhssFromPubKeySuite() {
+	return {
+		title: 'Address generation',
+		summary: 'Address generation from a public key',
+		config: 'mainnet',
+		runner: 'address_generation',
+		handler: 'address_from_pub_key',
+		testCases: [generateTestCakhgkjghkjgsesForAddressFromPubKey()],
+	};
+}
+
+BaseGenerator.runGenerator('address_generation', [
+	addressFromPubKeySuite,
+	addreufjhfjhfjhssFromPubKeySuite,
+]);
