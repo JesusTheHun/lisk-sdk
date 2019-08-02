@@ -1,0 +1,14 @@
+{
+	"name": "lisk-protocol-specs",
+	"version": "1.0.0",
+	"description": "Lisk protocol specs generator",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@liskhq/lisk-transactions": "^2.3.0"
+	}
+}
