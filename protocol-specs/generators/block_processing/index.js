@@ -1,10 +1,22 @@
 const BaseGenerator = require('../../base_generator');
+const utils = require('../../utils');
 
-function generateTestCasesForValidBlock() {}
+function generateTestCasesForValidBlock() {
+	return {
+		initialState: {
+			chain: [],
+		},
+		input,
+		output: {
+			chain: [],
+			accounts: [],
+		},
+	};
+}
 
 function generateTestCasesForInvalidBlock() {}
 
-function validBlockSuite(configPath) {
+function validBlockSuite() {
 	return {
 		title: 'Valid block processing',
 		summary: '',

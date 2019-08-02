@@ -10,6 +10,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@liskhq/lisk-cryptography": "^2.2.0",
 		"@liskhq/lisk-transactions": "^2.3.0"
 	}
 }

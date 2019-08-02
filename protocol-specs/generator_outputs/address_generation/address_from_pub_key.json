@@ -6,8 +6,8 @@
 	"handler": "address_from_pub_key",
 	"testCases": [
 		{
-			"kuhgkjgkjgkjg": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-			"oukjhgkjghkjgkjghtput": "12668885769632475474L"
+			"input": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
+			"output": "12668885769632475474L"
 		}
 	]
 }

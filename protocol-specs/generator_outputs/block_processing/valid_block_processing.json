@@ -1,0 +1,7 @@
+{
+	"title": "Valid block processing",
+	"summary": "",
+	"config": "mainnet",
+	"runner": "block_processing",
+	"handler": "valid_block_processing"
+}
