@@ -29,7 +29,10 @@ const BASIC_TRANSFER = {
 
 function generateTestCasesForValidSignature() {
 	return {
-		input: [BASIC_TRANSFER, SENDER_ACCOUNT.passphrase],
+		input: {
+			transferTransaction: BASIC_TRANSFER,
+			senderPassphrase: SENDER_ACCOUNT.passphrase,
+		},
 		output:
 			'579164b3045a612823b2b9ec667374417565229a4028f905b8452bf91048633f9a679d49fc46169659f3f3329ad414e8c6e17e1c2f9866a6e1bee9efa2a60a0a',
 	};
