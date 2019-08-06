@@ -2193,7 +2193,7 @@ function decryptKeypairs() {
 		try {
 			passphrase = decryptPassphraseWithPassword(
 				parseEncryptedPassphrase(encryptedItem.encryptedPassphrase),
-				password,
+				password
 			);
 		} catch (e) {
 			throw new Error('Invalid password and public key combination');
@@ -2225,13 +2225,13 @@ const getBytes = block => {
 	const blockVersionBuffer = intToBuffer(
 		block.version,
 		SIZE_INT32,
-		LITTLE_ENDIAN,
+		LITTLE_ENDIAN
 	);
 
 	const timestampBuffer = intToBuffer(
 		block.timestamp,
 		SIZE_INT32,
-		LITTLE_ENDIAN,
+		LITTLE_ENDIAN
 	);
 
 	const previousBlockBuffer = block.previousBlock
@@ -2241,31 +2241,31 @@ const getBytes = block => {
 	const numTransactionsBuffer = intToBuffer(
 		block.numberOfTransactions,
 		SIZE_INT32,
-		LITTLE_ENDIAN,
+		LITTLE_ENDIAN
 	);
 
 	const totalAmountBuffer = intToBuffer(
 		block.totalAmount.toString(),
 		SIZE_INT64,
-		LITTLE_ENDIAN,
+		LITTLE_ENDIAN
 	);
 
 	const totalFeeBuffer = intToBuffer(
 		block.totalFee.toString(),
 		SIZE_INT64,
-		LITTLE_ENDIAN,
+		LITTLE_ENDIAN
 	);
 
 	const rewardBuffer = intToBuffer(
 		block.reward.toString(),
 		SIZE_INT64,
-		LITTLE_ENDIAN,
+		LITTLE_ENDIAN
 	);
 
 	const payloadLengthBuffer = intToBuffer(
 		block.payloadLength,
 		SIZE_INT32,
-		LITTLE_ENDIAN,
+		LITTLE_ENDIAN
 	);
 
 	const payloadHashBuffer = hexToBuffer(block.payloadHash);
@@ -2298,7 +2298,7 @@ function generateTestCasesForValidBlockWithNoTxs() {
 	const forgerKeyPair = getDelegateKeypairForCurrentSlot(0, 1);
 	const reward = blockRewards.calculateReward(
 		genesisBlock.height + 1,
-		BLOCK_REWARDS,
+		BLOCK_REWARDS
 	);
 
 	const newBlock = {
@@ -2315,6 +2315,7 @@ function generateTestCasesForValidBlockWithNoTxs() {
 	};
 
 	newBlock.payloadHash = hash(Buffer.concat([])).toString(); // arg is [] as block has no txs
+
 	newBlock.blockSignature = sign(newBlock, forgerKeyPair);
 	newBlock.height = genesisBlock.height + 1;
 
