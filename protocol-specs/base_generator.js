@@ -10,7 +10,7 @@ module.exports = {
 			const dirPath = path.join(
 				__dirname,
 				`./generator_outputs/${suiteResult.runner}`,
-			); // TODO: remove hard path
+			); // TODO: remove hard path and maybe expose it to a CLI
 
 			if (!fs.existsSync(dirPath)) {
 				fs.mkdirSync(dirPath);

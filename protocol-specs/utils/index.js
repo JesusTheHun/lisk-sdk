@@ -1,5 +1,1 @@
-const blocks = require('./blocks');
-
-module.exports = {
-	blocks,
-};
+module.exports = {};
