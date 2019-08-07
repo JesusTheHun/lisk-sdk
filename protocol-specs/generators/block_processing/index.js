@@ -26,6 +26,8 @@ const BLOCK_REWARDS = {
 	totalAmount: TOTAL_SUPPLY,
 };
 
+const BLOCK_TIME = defaultConfig.constants.BLOCK_TIME;
+
 const initialAccountState = [
 	{
 		address: '16313739661670634666L',
@@ -2306,7 +2308,7 @@ function generateTestCasesForValidBlockWithNoTxs() {
 		totalAmount: '0',
 		totalFee: '0',
 		reward: reward.toString(),
-		timestamp: 100903140,
+		timestamp: genesisBlock.timestamp + BLOCK_TIME,
 		numberOfTransactions: 0,
 		payloadLength: 0,
 		previousBlock: genesisBlock.id,
@@ -2314,7 +2316,7 @@ function generateTestCasesForValidBlockWithNoTxs() {
 		transactions: [],
 	};
 
-	newBlock.payloadHash = hash(Buffer.concat([])).toString(); // arg is [] as block has no txs
+	newBlock.payloadHash = hash(Buffer.concat([])).toString('hex'); // arg is [] as block has no txs
 
 	newBlock.blockSignature = sign(newBlock, forgerKeyPair);
 	newBlock.height = genesisBlock.height + 1;

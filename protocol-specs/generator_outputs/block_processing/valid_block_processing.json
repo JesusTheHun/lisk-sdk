@@ -3753,16 +3753,15 @@
 				"totalAmount": "0",
 				"totalFee": "0",
 				"reward": "0",
-				"payloadHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-				"timestamp": 100903140,
+				"timestamp": 10,
 				"numberOfTransactions": 0,
 				"payloadLength": 0,
 				"previousBlock": "6524861224470851795",
 				"generatorPublicKey": "9c16751dbe57f4dff7b3fb8911a62c0cb2bdee6240e3f3fefe76832788cb14c6",
 				"transactions": [],
-				"blockSignature": "03ec14546ff619fd8ab8b23c4d7e3d7453bd50f1ccb1ffc7e74ae76e0b7fff0156243751d046280d99f3604b653a4d3a1d89b01838d49447e71cd1809d67c206",
-				"height": 112,
-				"id": "11044866733255436266"
+				"payloadHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+				"blockSignature": "ddd62633b7f071d93bdf2f56fc995618d1e6ca205fd97b487d9c1a6802b3b98c3f9ffd84d659edc84649eb0268da3186d66966f2e8820119ed95398dbf002b0a",
+				"height": 2
 			}
 		},
 		"output": {
@@ -5532,16 +5531,15 @@
 					"totalAmount": "0",
 					"totalFee": "0",
 					"reward": "0",
-					"payloadHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-					"timestamp": 100903140,
+					"timestamp": 10,
 					"numberOfTransactions": 0,
 					"payloadLength": 0,
 					"previousBlock": "6524861224470851795",
 					"generatorPublicKey": "9c16751dbe57f4dff7b3fb8911a62c0cb2bdee6240e3f3fefe76832788cb14c6",
 					"transactions": [],
-					"blockSignature": "03ec14546ff619fd8ab8b23c4d7e3d7453bd50f1ccb1ffc7e74ae76e0b7fff0156243751d046280d99f3604b653a4d3a1d89b01838d49447e71cd1809d67c206",
-					"height": 112,
-					"id": "11044866733255436266"
+					"payloadHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+					"blockSignature": "ddd62633b7f071d93bdf2f56fc995618d1e6ca205fd97b487d9c1a6802b3b98c3f9ffd84d659edc84649eb0268da3186d66966f2e8820119ed95398dbf002b0a",
+					"height": 2
 				}
 			],
 			"accounts": [

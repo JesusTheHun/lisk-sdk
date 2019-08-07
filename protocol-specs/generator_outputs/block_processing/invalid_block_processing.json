@@ -1,7 +1,0 @@
-{
-	"title": "Invalid block processing",
-	"summary": "",
-	"config": "mainnet",
-	"runner": "block_processing",
-	"handler": "invalid_block_processing"
-}
