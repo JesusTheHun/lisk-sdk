@@ -1,32 +1,8 @@
-const {
-	hash,
-	getPrivateAndPublicKeyBytesFromPassphrase,
-	decryptPassphraseWithPassword,
-	parseEncryptedPassphrase,
-	signDataWithPrivateKey,
-	BIG_ENDIAN,
-	hexToBuffer,
-	intToBuffer,
-	LITTLE_ENDIAN,
-} = require('@liskhq/lisk-cryptography');
-const { clone } = require('lodash');
 const BaseGenerator = require('../../base_generator');
 const defaultConfig = require('../../config/devnet');
-const blockRewards = require('../../utils/blocks/block_rewards');
+const { createBlock } = require('../../utils/blocks');
 
 const { genesisBlock } = defaultConfig;
-
-const ACTIVE_DELEGATES = defaultConfig.constants.ACTIVE_DELEGATES;
-const TOTAL_SUPPLY = defaultConfig.constants.TOTAL_AMOUNT;
-
-const BLOCK_REWARDS = {
-	distance: defaultConfig.constants.REWARDS.DISTANCE,
-	rewardOffset: defaultConfig.constants.REWARDS.OFFSET,
-	milestones: defaultConfig.constants.REWARDS.MILESTONES,
-	totalAmount: TOTAL_SUPPLY,
-};
-
-const BLOCK_TIME = defaultConfig.constants.BLOCK_TIME;
 
 const initialAccountState = [
 	{
@@ -2110,216 +2086,18 @@ const initialAccountState = [
 	},
 ];
 
-/**
- * Block headers buffer size and endianness
- *
- * BLOCK_VERSION_LENGTH = 4 (LITTLE_ENDIAN);
- * TIMESTAMP_LENGTH = 4 (LITTLE_ENDIAN);
- * PREVIOUS_BLOCK_LENGTH = 8 (BIG_ENDIAN);
- * NUMBERS_OF_TRANSACTIONS_LENGTH = 4 (LITTLE_ENDIAN);
- * TOTAL_AMOUNT_LENGTH = 8 (LITTLE_ENDIAN);
- * TOTAL_FEE_LENGTH = 8 (LITTLE_ENDIAN);
- * REWARD_LENGTH = 8 (LITTLE_ENDIAN);
- * PAYLOAD_LENGTH_LENGTH = 4 (LITTLE_ENDIAN);
- * PAYLOAD_HASH_LENGTH = 32 (BIG_ENDIAN);
- * GENERATOR_PUBLIC_KEY_LENGTH = 32 (BIG_ENDIAN);
- * BLOCK_SIGNATURE_LENGTH = 64 (BIG_ENDIAN);
- * UNUSED_LENGTH = 4;
- */
-const SIZE_INT32 = 4;
-const SIZE_INT64 = 8;
-
-const getKeysSortByVote = () =>
-	clone(initialAccountState)
-		.filter(account => account.isDelegate)
-		.sort((accountA, accountB) => {
-			if (accountA.vote === accountB.vote) {
-				return accountA.publicKey > accountB.publicKey;
-			}
-			return accountA.vote < accountB.vote;
-		})
-		.map(account => account.publicKey);
-
-/**
- * Gets delegate list based on input function by vote and changes order.
- *
- * @param {number} round
- * @param {function} source - Source function for get delegates
- * @param {function} cb - Callback function
- * @param {Object} tx - Database transaction/task object
- * @returns {setImmediateCallback} cb, err, truncated delegate list
- * @todo Add description for the params
- */
-function generateDelegateList(round) {
-	const truncDelegateList = getKeysSortByVote();
-
-	const seedSource = round.toString();
-	let currentSeed = hash(seedSource, 'utf8');
-
-	for (let i = 0, delCount = truncDelegateList.length; i < delCount; i++) {
-		for (let x = 0; x < 4 && i < delCount; i++, x++) {
-			const newIndex = currentSeed[x] % delCount;
-			const b = truncDelegateList[newIndex];
-			truncDelegateList[newIndex] = truncDelegateList[i];
-			truncDelegateList[i] = b;
-		}
-		currentSeed = hash(currentSeed);
-	}
-
-	return truncDelegateList;
-}
-
-const getDelegateKeypairForCurrentSlot = (currentSlot, round) => {
-	const keypairs = decryptKeypairs();
-	const activeDelegates = generateDelegateList(round);
-
-	const currentSlotIndex = currentSlot % ACTIVE_DELEGATES;
-	const currentSlotDelegate = activeDelegates[currentSlotIndex];
-
-	if (currentSlotDelegate && keypairs[currentSlotDelegate]) {
-		return keypairs[currentSlotDelegate];
-	}
-
-	return null;
-};
-
-function decryptKeypairs() {
-	const encryptedList = defaultConfig.forging.delegates;
-	const password = defaultConfig.forging.defaultPassword;
-
-	const keypairs = {};
-
-	// eslint-disable-next-line no-restricted-syntax
-	for (const encryptedItem of encryptedList) {
-		let passphrase;
-		try {
-			passphrase = decryptPassphraseWithPassword(
-				parseEncryptedPassphrase(encryptedItem.encryptedPassphrase),
-				password
-			);
-		} catch (e) {
-			throw new Error('Invalid password and public key combination');
-		}
-
-		const {
-			publicKeyBytes,
-			privateKeyBytes,
-		} = getPrivateAndPublicKeyBytesFromPassphrase(passphrase);
-
-		const keypair = {
-			publicKey: publicKeyBytes,
-			privateKey: privateKeyBytes,
-		};
-
-		if (keypair.publicKey.toString('hex') !== encryptedItem.publicKey) {
-			throw `Invalid encryptedPassphrase for publicKey: ${
-				encryptedItem.publicKey
-			}. Public keys do not match`;
-		}
-
-		keypairs[keypair.publicKey.toString('hex')] = keypair;
-	}
-
-	return keypairs;
-}
-
-const getBytes = block => {
-	const blockVersionBuffer = intToBuffer(
-		block.version,
-		SIZE_INT32,
-		LITTLE_ENDIAN
-	);
-
-	const timestampBuffer = intToBuffer(
-		block.timestamp,
-		SIZE_INT32,
-		LITTLE_ENDIAN
-	);
-
-	const previousBlockBuffer = block.previousBlock
-		? intToBuffer(block.previousBlock, SIZE_INT64, BIG_ENDIAN)
-		: Buffer.alloc(SIZE_INT64);
-
-	const numTransactionsBuffer = intToBuffer(
-		block.numberOfTransactions,
-		SIZE_INT32,
-		LITTLE_ENDIAN
-	);
-
-	const totalAmountBuffer = intToBuffer(
-		block.totalAmount.toString(),
-		SIZE_INT64,
-		LITTLE_ENDIAN
-	);
-
-	const totalFeeBuffer = intToBuffer(
-		block.totalFee.toString(),
-		SIZE_INT64,
-		LITTLE_ENDIAN
-	);
-
-	const rewardBuffer = intToBuffer(
-		block.reward.toString(),
-		SIZE_INT64,
-		LITTLE_ENDIAN
-	);
-
-	const payloadLengthBuffer = intToBuffer(
-		block.payloadLength,
-		SIZE_INT32,
-		LITTLE_ENDIAN
-	);
-
-	const payloadHashBuffer = hexToBuffer(block.payloadHash);
-
-	const generatorPublicKeyBuffer = hexToBuffer(block.generatorPublicKey);
-
-	const blockSignatureBuffer = block.blockSignature
-		? hexToBuffer(block.blockSignature)
-		: Buffer.alloc(0);
-
-	return Buffer.concat([
-		blockVersionBuffer,
-		timestampBuffer,
-		previousBlockBuffer,
-		numTransactionsBuffer,
-		totalAmountBuffer,
-		totalFeeBuffer,
-		rewardBuffer,
-		payloadLengthBuffer,
-		payloadHashBuffer,
-		generatorPublicKeyBuffer,
-		blockSignatureBuffer,
-	]);
-};
-
-const sign = (block, keypair) =>
-	signDataWithPrivateKey(hash(getBytes(block)), keypair.privateKey);
-
 function generateTestCasesForValidBlockWithNoTxs() {
-	const forgerKeyPair = getDelegateKeypairForCurrentSlot(0, 1);
-	const reward = blockRewards.calculateReward(
-		genesisBlock.height + 1,
-		BLOCK_REWARDS
+	const block = createBlock(
+		defaultConfig,
+		initialAccountState,
+		genesisBlock,
+		1,
+		0,
+		{
+			version: 1,
+			transactions: [],
+		}
 	);
-
-	const newBlock = {
-		version: 1,
-		totalAmount: '0',
-		totalFee: '0',
-		reward: reward.toString(),
-		timestamp: genesisBlock.timestamp + BLOCK_TIME,
-		numberOfTransactions: 0,
-		payloadLength: 0,
-		previousBlock: genesisBlock.id,
-		generatorPublicKey: forgerKeyPair.publicKey.toString('hex'),
-		transactions: [],
-	};
-
-	newBlock.payloadHash = hash(Buffer.concat([])).toString('hex'); // arg is [] as block has no txs
-
-	newBlock.blockSignature = sign(newBlock, forgerKeyPair);
-	newBlock.height = genesisBlock.height + 1;
 
 	return {
 		initialState: {
@@ -2327,10 +2105,10 @@ function generateTestCasesForValidBlockWithNoTxs() {
 			accounts: initialAccountState,
 		},
 		input: {
-			block: newBlock,
+			block,
 		},
 		output: {
-			chain: [genesisBlock, newBlock],
+			chain: [genesisBlock, block],
 			accounts: initialAccountState,
 		},
 	};
