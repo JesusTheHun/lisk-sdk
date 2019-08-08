@@ -1,3 +1,19 @@
+/*
+ * Copyright © 2018 Lisk Foundation
+ *
+ * See the LICENSE file at the top-level directory of this distribution
+ * for licensing information.
+ *
+ * Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
+ * no part of this software, including this file, may be copied, modified,
+ * propagated, or distributed except according to the terms contained in the
+ * LICENSE file.
+ *
+ * Removal or modification of this copyright notice is prohibited.
+ */
+
+'use strict';
+
 const BaseGenerator = require('../../base_generator');
 
 const SENDER_ACCOUNT = {
@@ -27,28 +43,24 @@ const BASIC_TRANSFER = {
 	type: 0,
 };
 
-function generateTestCasesForValidSignature() {
-	return {
-		input: {
-			transferTransaction: BASIC_TRANSFER,
-			senderPassphrase: SENDER_ACCOUNT.passphrase,
-		},
-		output:
-			'579164b3045a612823b2b9ec667374417565229a4028f905b8452bf91048633f9a679d49fc46169659f3f3329ad414e8c6e17e1c2f9866a6e1bee9efa2a60a0a',
-	};
-}
+const generateTestCasesForValidSignature = () => ({
+	input: {
+		transferTransaction: BASIC_TRANSFER,
+		senderPassphrase: SENDER_ACCOUNT.passphrase,
+	},
+	output:
+		'579164b3045a612823b2b9ec667374417565229a4028f905b8452bf91048633f9a679d49fc46169659f3f3329ad414e8c6e17e1c2f9866a6e1bee9efa2a60a0a',
+});
 
-function validSignatureSuite() {
-	return {
-		title: 'Valid signature generation',
-		summary:
-			'based on a valid transfer transaction generate a signature an id for it',
-		config: 'mainnet',
-		runner: 'transaction_signing',
-		handler: 'valid_transaction_signing',
-		testCases: generateTestCasesForValidSignature(),
-	};
-}
+const validSignatureSuite = () => ({
+	title: 'Valid signature generation',
+	summary:
+		'based on a valid transfer transaction generate a signature an id for it',
+	config: 'mainnet',
+	runner: 'transaction_signing',
+	handler: 'valid_transaction_signing',
+	testCases: generateTestCasesForValidSignature(),
+});
 
 module.exports = BaseGenerator.runGenerator('transaction_signing', [
 	validSignatureSuite,
