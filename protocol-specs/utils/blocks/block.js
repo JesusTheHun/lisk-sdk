@@ -22,11 +22,13 @@ const {
 	intToBuffer,
 	LITTLE_ENDIAN,
 } = require('@liskhq/lisk-cryptography');
+const BigNum = require('@liskhq/bignum');
 const { getDelegateKeypairForCurrentSlot } = require('../dpos');
 const blockRewards = require('../blocks/block_rewards');
 
 const SIZE_INT32 = 4;
 const SIZE_INT64 = 8;
+const TRANSACTION_TYPES_MULTI = 4;
 
 const getBytes = block => {
 	const blockVersionBuffer = intToBuffer(
@@ -101,6 +103,39 @@ const getBytes = block => {
 const sign = (block, keypair) =>
 	signDataWithPrivateKey(hash(getBytes(block)), keypair.privateKey);
 
+const sortTransactions = transactions =>
+	transactions.sort((a, b) => {
+		// Place MULTI transaction after all other transaction types
+		if (
+			a.type === TRANSACTION_TYPES_MULTI &&
+			b.type !== TRANSACTION_TYPES_MULTI
+		) {
+			return 1;
+		}
+		// Place all other transaction types before MULTI transaction
+		if (
+			a.type !== TRANSACTION_TYPES_MULTI &&
+			b.type === TRANSACTION_TYPES_MULTI
+		) {
+			return -1;
+		}
+		// Place depending on type (lower first)
+		if (a.type < b.type) {
+			return -1;
+		}
+		if (a.type > b.type) {
+			return 1;
+		}
+		// Place depending on amount (lower first)
+		if (a.amount.lt(b.amount)) {
+			return -1;
+		}
+		if (a.amount.gt(b.amount)) {
+			return 1;
+		}
+		return 0;
+	});
+
 const createBlock = (
 	config,
 	accountsState,
@@ -127,21 +162,48 @@ const createBlock = (
 		blockRewardsSettings
 	);
 
+	const blockTransactions = [];
+	const transactionsBytesArray = [];
+
+	let totalFee = new BigNum(0);
+	let totalAmount = new BigNum(0);
+	let size = 0;
+
+	const sortedTransactions = sortTransactions(transactions);
+
+	// eslint-disable-next-line no-restricted-syntax
+	for (const transaction of sortedTransactions) {
+		const transactionBytes = transaction.getBytes(transaction);
+
+		if (size + transactionBytes.length > config.constants.MAX_PAYLOAD_LENGTH) {
+			break;
+		}
+
+		size += transactionBytes.length;
+
+		totalFee = totalFee.plus(transaction.fee);
+		totalAmount = totalAmount.plus(transaction.amount);
+
+		blockTransactions.push(transaction);
+		transactionsBytesArray.push(transactionBytes);
+	}
+
 	const newBlock = {
 		version,
-		totalAmount: '0',
-		totalFee: '0',
+		totalAmount: totalAmount.toString(),
+		totalFee: totalFee.toString(),
 		reward: reward.toString(),
 		timestamp: previousBlock.timestamp + config.constants.BLOCK_TIME,
-		numberOfTransactions: 0,
-		payloadLength: 0,
+		numberOfTransactions: blockTransactions.length,
+		payloadLength: size,
 		previousBlock: previousBlock.id,
 		generatorPublicKey: forgerKeyPair.publicKey.toString('hex'),
-		transactions,
+		transactions: blockTransactions.map(tx => tx.toJSON()),
 	};
 
-	newBlock.payloadHash = hash(Buffer.concat([])).toString('hex'); // arg is [] as block has no txs
-
+	newBlock.payloadHash = hash(Buffer.concat(transactionsBytesArray)).toString(
+		'hex'
+	); // arg is [] as block has no txs
 	newBlock.blockSignature = sign(newBlock, forgerKeyPair);
 	newBlock.height = previousBlock.height + 1;
 

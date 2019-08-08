@@ -14,6 +14,9 @@
 
 'use strict';
 
+const { transfer, TransferTransaction } = require('@liskhq/lisk-transactions');
+const { cloneDeep } = require('lodash');
+const BigNum = require('@liskhq/bignum');
 const BaseGenerator = require('../../base_generator');
 const defaultConfig = require('../../config/devnet');
 const { createBlock } = require('../../utils/blocks');
@@ -2104,6 +2107,33 @@ const initialAccountState = [
 	},
 ];
 
+// Object holding the genesis account information and passphrase as well as
+// an existing delegate account for DEVNET
+// TODO: Move this to devnet.json config file.
+const accounts = {
+	// Genesis account, initially holding 100M total supply
+	genesis: {
+		address: '16313739661670634666L',
+		publicKey:
+			'c094ebee7ec0c50ebee32918655e089f6e1a604b83bcaa760293c61e0f18ab6f',
+		passphrase:
+			'wagon stock borrow episode laundry kitten salute link globe zero feed marble',
+		balance: '10000000000000000',
+		encryptedPassphrase:
+			'iterations=1&salt=e8c7dae4c893e458e0ebb8bff9a36d84&cipherText=c0fab123d83c386ffacef9a171b6e0e0e9d913e58b7972df8e5ef358afbc65f99c9a2b6fe7716f708166ed72f59f007d2f96a91f48f0428dd51d7c9962e0c6a5fc27ca0722038f1f2cf16333&iv=1a2206e426c714091b7e48f6&tag=3a9d9f9f9a92c9a58296b8df64820c15&version=1',
+		password: 'elephant tree paris dragon chair galaxy',
+	},
+	existingDelegate: {
+		address: '10881167371402274308L',
+		publicKey:
+			'addb0e15a44b0fdc6ff291be28d8c98f5551d0cd9218d749e30ddb87c6e31ca9',
+		passphrase:
+			'actress route auction pudding shiver crater forum liquid blouse imitate seven front',
+		balance: '0',
+		delegateName: 'genesis_100',
+	},
+};
+
 const generateTestCasesForValidBlockWithNoTxs = () => {
 	const block = createBlock(
 		defaultConfig,
@@ -2132,15 +2162,84 @@ const generateTestCasesForValidBlockWithNoTxs = () => {
 	};
 };
 
+const generateTestCasesValidBlockTransferTx = () => {
+	const amount = '1500000000';
+	const transferTx = new TransferTransaction(
+		transfer({
+			amount,
+			passphrase: accounts.genesis.passphrase,
+			recipientId: accounts.existingDelegate.address,
+		})
+	);
+
+	const block = createBlock(
+		defaultConfig,
+		initialAccountState,
+		genesisBlock,
+		1,
+		0,
+		{
+			version: 1,
+			transactions: [transferTx],
+		}
+	);
+
+	const { balance: senderBalance } = initialAccountState.find(
+		account => account.address === accounts.genesis.address
+	);
+
+	const { balance: recipientBalance } = initialAccountState.find(
+		account => account.address === accounts.existingDelegate.address
+	);
+
+	const resultingAccountState = cloneDeep(initialAccountState);
+
+	resultingAccountState.find(
+		account => account.address === accounts.genesis.address
+	).balance = parseInt(
+		new BigNum(senderBalance.toString()).sub(amount).toString()
+	);
+
+	resultingAccountState.find(
+		account => account.address === accounts.existingDelegate.address
+	).balance = parseInt(
+		new BigNum(recipientBalance.toString()).plus(amount).toString()
+	);
+
+	return {
+		initialState: {
+			chain: [genesisBlock],
+			accounts: initialAccountState,
+		},
+		input: {
+			block,
+		},
+		output: {
+			chain: [genesisBlock, block],
+			accounts: resultingAccountState,
+		},
+	};
+};
+
 const validEmptyBlockSuite = () => ({
 	title: 'Valid block processing',
-	summary: '',
+	summary: 'An empty valid block is processed',
 	config: 'mainnet',
 	runner: 'block_processing',
-	handler: 'valid_block_processing',
+	handler: 'valid_block_processing_empty_block',
 	testCases: generateTestCasesForValidBlockWithNoTxs(),
+});
+
+const validBlockWithTransferTxSuite = () => ({
+	title: 'Valid block processing',
+	summary: 'A valid block with a transfer transaction is processed',
+	config: 'mainnet',
+	runner: 'block_processing',
+	handler: 'valid_block_processing_one_transfer_tx',
+	testCases: generateTestCasesValidBlockTransferTx(),
 });
 
 module.exports = BaseGenerator.runGenerator('block_processing', [
 	validEmptyBlockSuite,
+	validBlockWithTransferTxSuite,
 ]);

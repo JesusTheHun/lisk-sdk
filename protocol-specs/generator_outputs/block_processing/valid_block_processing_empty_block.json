@@ -1,9 +1,9 @@
 {
 	"title": "Valid block processing",
-	"summary": "",
+	"summary": "An empty valid block is processed",
 	"config": "mainnet",
 	"runner": "block_processing",
-	"handler": "valid_block_processing",
+	"handler": "valid_block_processing_empty_block",
 	"testCases": {
 		"initialState": {
 			"chain": [
