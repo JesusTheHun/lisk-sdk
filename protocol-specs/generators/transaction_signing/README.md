@@ -1,6 +1,6 @@
 # Transaction Signing Test Generator
 
-Description of the output format
+A set of test generators for transaction signing.
 
 ## Resources
 
