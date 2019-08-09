@@ -17,7 +17,7 @@
 const { transfer, TransferTransaction } = require('@liskhq/lisk-transactions');
 const { cloneDeep } = require('lodash');
 const BigNum = require('@liskhq/bignum');
-const BaseGenerator = require('../../base_generator');
+const BaseGenerator = require('../base_generator');
 const defaultConfig = require('../../config/devnet');
 const { createBlock } = require('../../utils/blocks');
 

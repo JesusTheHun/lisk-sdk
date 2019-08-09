@@ -14,7 +14,7 @@
 
 'use strict';
 
-const BaseGenerator = require('../../base_generator');
+const BaseGenerator = require('../base_generator');
 
 const SENDER_ACCOUNT = {
 	passphrase:
