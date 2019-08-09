@@ -38,14 +38,17 @@ export class PeerBook {
 	}
 
 	public get newPeers(): ReadonlyArray<P2PPeerInfo> {
+
 		return this._newPeers.newPeersList();
 	}
 
 	public get triedPeers(): ReadonlyArray<P2PDiscoveredPeerInfo> {
+
 		return this._triedPeers.triedPeersList();
 	}
 
 	public getAllPeers(): ReadonlyArray<P2PPeerInfo> {
+
 		return [...this.newPeers, ...this.triedPeers];
 	}
 	/**

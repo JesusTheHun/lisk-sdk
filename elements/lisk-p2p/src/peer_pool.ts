@@ -63,6 +63,7 @@ import {
 } from './peer';
 import { getUniquePeersbyIp } from './peer_selection';
 import { constructPeerIdFromPeerInfo } from './utils';
+import fs = require('fs');
 
 export {
 	EVENT_CLOSE_INBOUND,
@@ -408,6 +409,8 @@ export class PeerPool extends EventEmitter {
 	): Peer {
 		const inboundPeers = this.getPeers(InboundPeer);
 		if (inboundPeers.length >= this._maxInboundConnections) {
+			fs.appendFile('../experiment.txt', `\n${ new Date().toTimeString() } Too many inbound peers, evicting one. \n`, () => { return });
+
 			this._evictPeer(InboundPeer);
 		}
 
@@ -420,6 +423,8 @@ export class PeerPool extends EventEmitter {
 			secret: this._peerPoolConfig.secret,
 		};
 		const peer = new InboundPeer(peerInfo, socket, peerConfig);
+
+		fs.appendFile('../experiment.txt', `\n${ new Date().toTimeString() } Peerpool addInboundPeer: ${ JSON.stringify(peerInfo.ipAddress) } \n`, () => { return });
 
 		// Throw an error because adding a peer multiple times is a common developer error which is very difficult to identify and debug.
 		if (this._peerMap.has(peer.id)) {
@@ -458,6 +463,9 @@ export class PeerPool extends EventEmitter {
 		if (this._nodeInfo) {
 			this._applyNodeInfoOnPeer(peer, this._nodeInfo);
 		}
+
+
+		fs.appendFile('../experiment.txt', `\n${ new Date().toTimeString() } addOutboundPeer: ${ JSON.stringify(peerInfo.ipAddress) } \n`, () => { return });
 
 		return peer;
 	}
@@ -524,7 +532,13 @@ export class PeerPool extends EventEmitter {
 			);
 		}
 
-		return peers.filter(peer => peer.state === ConnectionState.OPEN);
+		const connectedPeers = peers.filter(peer => peer.state === ConnectionState.OPEN);
+
+		if(connectedPeers.length > 0) {
+			fs.appendFile('../experiment.txt', `\n${ new Date().toTimeString() } getConnectedPeers: ${ JSON.stringify(connectedPeers.map(p => p.ipAddress)) } \n`, () => { return });
+		}
+
+		return connectedPeers;
 	}
 
 	public getPeer(peerId: string): Peer | undefined {
@@ -636,6 +650,8 @@ export class PeerPool extends EventEmitter {
 
 		if (kind === InboundPeer) {
 			const evictionCandidates = this._selectPeersForEviction();
+			fs.appendFile('../experiment.txt', `\n${ new Date().toTimeString() } Eviction candidates: ${ evictionCandidates } \n`, () => { return });
+
 			const peerToEvict = shuffle(evictionCandidates)[0];
 			if (peerToEvict) {
 				this.removePeer(peerToEvict.id);

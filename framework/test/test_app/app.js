@@ -29,7 +29,7 @@ const dummyBuildVersion = '#buildVersion';
 
 const appConfig = {
 	app: {
-		version: '2.0.0',
+		version: '2.1.0-alpha.0',
 		minVersion: '1.0.0',
 		protocolVersion: '1.1',
 		lastCommitId: dummyLastCommitId,

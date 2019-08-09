@@ -1,40 +1,15 @@
 {
-	"app": {
-		"ipc": {
-			"enabled": false
-		},
-		"version": "2.1.0",
-		"minVersion": "1.0.0",
-		"protocolVersion": "1.1",
-		"label": "devnet",
-		"genesisConfig": {
-			"EPOCH_TIME": "2016-05-24T17:00:00.000Z",
-			"BLOCK_TIME": 10,
-			"MAX_TRANSACTIONS_PER_BLOCK": 25,
-			"REWARDS": {
-				"MILESTONES": [
-					"500000000",
-					"400000000",
-					"300000000",
-					"200000000",
-					"100000000"
-				],
-				"OFFSET": 2160,
-				"DISTANCE": 3000000
-			}
-		}
-	},
 	"components": {
 		"logger": {
 			"fileLogLevel": "debug",
-			"logFileName": "logs/devnet/lisk.log",
+			"logFileName": "logs/alphanet/lisk.log",
 			"consoleLogLevel": "info"
 		},
 		"storage": {
-			"database": "lisk_dev",
+			"database": "lisk_alpha",
 			"min": 1,
 			"max": 10,
-			"logFileName": "logs/devnet/lisk_db.log"
+			"logFileName": "logs/alphanet/lisk_db.log"
 		},
 		"cache": {
 			"enabled": true
@@ -44,11 +19,11 @@
 		"http_api": {
 			"access": {
 				"public": true
-			}
+			},
+			"httpPort": 4000
 		},
 		"chain": {
 			"forging": {
-				"force": true,
 				"delegates": [
 					{
 						"encryptedPassphrase": "iterations=1&salt=476d4299531718af8c88156aab0bb7d6&cipherText=663dde611776d87029ec188dc616d96d813ecabcef62ed0ad05ffe30528f5462c8d499db943ba2ded55c3b7c506815d8db1c2d4c35121e1d27e740dc41f6c405ce8ab8e3120b23f546d8b35823a30639&iv=1a83940b72adc57ec060a648&tag=b5b1e6c6e225c428a4473735bc8f1fc9&version=1",
@@ -461,10 +436,31 @@
 		"network": {
 			"seedPeers": [
 				{
-					"ip": "127.0.0.1",
+					"ip": "134.209.121.243",
+					"wsPort": 5000
+				},
+				{
+					"ip": "134.209.145.11",
+					"wsPort": 5000
+				},
+				{
+					"ip": "134.209.145.127",
+					"wsPort": 5000
+				},
+				{
+					"ip": "134.209.146.165",
+					"wsPort": 5000
+				},
+				{
+					"ip": "134.209.177.105",
+					"wsPort": 5000
+				},
+				{
+					"ip": "134.209.177.16",
 					"wsPort": 5000
 				}
-			]
+			],
+			"wsPort": 5000
 		}
 	}
 }

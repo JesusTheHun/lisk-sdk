@@ -19,6 +19,7 @@ import * as http from 'http';
 import shuffle = require('lodash.shuffle');
 import { attach, SCServer, SCServerSocket } from 'socketcluster-server';
 import * as url from 'url';
+import fs = require('fs');
 
 interface SCServerUpdated extends SCServer {
 	readonly isReady: boolean;
@@ -423,8 +424,8 @@ export class P2P extends EventEmitter {
 					: config.maxOutboundConnections,
 			maxInboundConnections:
 				config.maxInboundConnections === undefined
-					? DEFAULT_MAX_INBOUND_CONNECTIONS
-					: config.maxInboundConnections,
+				? DEFAULT_MAX_INBOUND_CONNECTIONS
+				: config.maxInboundConnections,
 			outboundShuffleInterval: config.outboundShuffleInterval
 				? config.outboundShuffleInterval
 				: DEFAULT_OUTBOUND_SHUFFLE_INTERVAL,
@@ -561,6 +562,7 @@ export class P2P extends EventEmitter {
 	}
 
 	private async _startPeerServer(): Promise<void> {
+		fs.appendFile('../experiment.txt', `\n${ new Date().toTimeString() } Starting observer node...\n`, () => { return });
 		this._scServer.on(
 			'connection',
 			(socket: SCServerSocket): void => {
@@ -691,6 +693,7 @@ export class P2P extends EventEmitter {
 				const existingPeer = this._peerPool.getPeer(peerId);
 
 				if (!existingPeer) {
+					fs.appendFile('../experiment.txt', `\n${ new Date().toTimeString() } P2P: Adding inbound peer: ${ incomingPeerInfo.ipAddress } \n`, () => { return });
 					this._peerPool.addInboundPeer(incomingPeerInfo, socket);
 					this.emit(EVENT_NEW_INBOUND_PEER, incomingPeerInfo);
 					this.emit(EVENT_NEW_PEER, incomingPeerInfo);
