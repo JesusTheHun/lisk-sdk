@@ -430,16 +430,6 @@ export class PeerPool extends EventEmitter {
 		};
 		const peer = new InboundPeer(peerInfo, socket, peerConfig);
 
-		fs.appendFile(
-			'../experiment.txt',
-			`\n${new Date().toTimeString()} Peerpool addInboundPeer: ${JSON.stringify(
-				peerInfo.ipAddress,
-			)} \n`,
-			() => {
-				return;
-			},
-		);
-
 		// Throw an error because adding a peer multiple times is a common developer error which is very difficult to identify and debug.
 		if (this._peerMap.has(peer.id)) {
 			throw new Error(`Peer ${peer.id} was already in the peer pool`);
@@ -556,18 +546,6 @@ export class PeerPool extends EventEmitter {
 		const connectedPeers = peers.filter(
 			peer => peer.state === ConnectionState.OPEN,
 		);
-
-		if (connectedPeers.length > 0) {
-			fs.appendFile(
-				'../experiment.txt',
-				`\n${new Date().toTimeString()} getConnectedPeers: ${JSON.stringify(
-					connectedPeers.map(p => p.ipAddress),
-				)} \n`,
-				() => {
-					return;
-				},
-			);
-		}
 
 		return connectedPeers;
 	}
