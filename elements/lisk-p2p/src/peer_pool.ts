@@ -409,7 +409,13 @@ export class PeerPool extends EventEmitter {
 	): Peer {
 		const inboundPeers = this.getPeers(InboundPeer);
 		if (inboundPeers.length >= this._maxInboundConnections) {
-			fs.appendFile('../experiment.txt', `\n${ new Date().toTimeString() } Too many inbound peers, evicting one. \n`, () => { return });
+			fs.appendFile(
+				'../experiment.txt',
+				`\n${new Date().toTimeString()} Too many inbound peers, evicting one. \n`,
+				() => {
+					return;
+				},
+			);
 
 			this._evictPeer(InboundPeer);
 		}
@@ -424,7 +430,15 @@ export class PeerPool extends EventEmitter {
 		};
 		const peer = new InboundPeer(peerInfo, socket, peerConfig);
 
-		fs.appendFile('../experiment.txt', `\n${ new Date().toTimeString() } Peerpool addInboundPeer: ${ JSON.stringify(peerInfo.ipAddress) } \n`, () => { return });
+		fs.appendFile(
+			'../experiment.txt',
+			`\n${new Date().toTimeString()} Peerpool addInboundPeer: ${JSON.stringify(
+				peerInfo.ipAddress,
+			)} \n`,
+			() => {
+				return;
+			},
+		);
 
 		// Throw an error because adding a peer multiple times is a common developer error which is very difficult to identify and debug.
 		if (this._peerMap.has(peer.id)) {
@@ -464,8 +478,15 @@ export class PeerPool extends EventEmitter {
 			this._applyNodeInfoOnPeer(peer, this._nodeInfo);
 		}
 
-
-		fs.appendFile('../experiment.txt', `\n${ new Date().toTimeString() } addOutboundPeer: ${ JSON.stringify(peerInfo.ipAddress) } \n`, () => { return });
+		fs.appendFile(
+			'../experiment.txt',
+			`\n${new Date().toTimeString()} addOutboundPeer: ${JSON.stringify(
+				peerInfo.ipAddress,
+			)} \n`,
+			() => {
+				return;
+			},
+		);
 
 		return peer;
 	}
@@ -532,10 +553,20 @@ export class PeerPool extends EventEmitter {
 			);
 		}
 
-		const connectedPeers = peers.filter(peer => peer.state === ConnectionState.OPEN);
+		const connectedPeers = peers.filter(
+			peer => peer.state === ConnectionState.OPEN,
+		);
 
-		if(connectedPeers.length > 0) {
-			fs.appendFile('../experiment.txt', `\n${ new Date().toTimeString() } getConnectedPeers: ${ JSON.stringify(connectedPeers.map(p => p.ipAddress)) } \n`, () => { return });
+		if (connectedPeers.length > 0) {
+			fs.appendFile(
+				'../experiment.txt',
+				`\n${new Date().toTimeString()} getConnectedPeers: ${JSON.stringify(
+					connectedPeers.map(p => p.ipAddress),
+				)} \n`,
+				() => {
+					return;
+				},
+			);
 		}
 
 		return connectedPeers;
@@ -593,6 +624,16 @@ export class PeerPool extends EventEmitter {
 					asc: true,
 			  })
 			: peers;
+		fs.appendFile(
+			'../experiment.txt',
+			`\n${new Date().toTimeString()} _selectPeersForEviction:_filteredPeersByNetgroup : ${JSON.stringify(
+				filteredPeersByNetgroup.map(p => p.netgroup),
+			)} \n`,
+			() => {
+				return;
+			},
+		);
+
 		if (filteredPeersByNetgroup.length <= 1) {
 			return filteredPeersByNetgroup;
 		}
@@ -604,7 +645,17 @@ export class PeerPool extends EventEmitter {
 					percentage: this._peerPoolConfig.latencyProtectionRatio,
 					asc: true,
 			  })
-			: peers;
+			: filteredPeersByNetgroup;
+		fs.appendFile(
+			'../experiment.txt',
+			`\n${new Date().toTimeString()} _selectPeersForEviction:_filteredPeersByLatency : ${JSON.stringify(
+				filteredPeersByLatency.map(p => p.latency),
+			)} \n`,
+			() => {
+				return;
+			},
+		);
+
 		if (filteredPeersByLatency.length <= 1) {
 			return filteredPeersByLatency;
 		}
@@ -618,6 +669,16 @@ export class PeerPool extends EventEmitter {
 					asc: false,
 			  })
 			: filteredPeersByLatency;
+		fs.appendFile(
+			'../experiment.txt',
+			`\n${new Date().toTimeString()} _selectPeersForEviction:_filteredPeersByResponseRate : ${JSON.stringify(
+				filteredPeersByResponseRate.map(p => p.responseRate),
+			)} \n`,
+			() => {
+				return;
+			},
+		);
+
 		if (filteredPeersByResponseRate.length <= 1) {
 			return filteredPeersByResponseRate;
 		}
@@ -650,7 +711,13 @@ export class PeerPool extends EventEmitter {
 
 		if (kind === InboundPeer) {
 			const evictionCandidates = this._selectPeersForEviction();
-			fs.appendFile('../experiment.txt', `\n${ new Date().toTimeString() } Eviction candidates: ${ evictionCandidates } \n`, () => { return });
+			fs.appendFile(
+				'../experiment.txt',
+				`\n${new Date().toTimeString()} Eviction candidates: ${evictionCandidates} \n`,
+				() => {
+					return;
+				},
+			);
 
 			const peerToEvict = shuffle(evictionCandidates)[0];
 			if (peerToEvict) {
