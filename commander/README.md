@@ -6,6 +6,15 @@ Lisk Commander is a command line tool to help developers to build a blockchain a
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
+## Compatibility
+
+Commander version | SDK version
+------------------|------------
+5.x | 5+
+4.x | 4.x
+3.x | 3.x
+2.x | 2.x
+
 ## Installation
 
 ```sh
